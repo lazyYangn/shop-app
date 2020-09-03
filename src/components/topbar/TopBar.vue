@@ -22,17 +22,15 @@ export default {
   data() {
     return {}
   },
-  props: {
-    focusFunc: {
-      type: Function,
-      default: function() {},
-    },
-  },
+  props: {},
 
   components: {},
   methods: {
     goSearch(path) {
       this.$router.push({ path })
+    },
+    focusFunc() {
+      this.$emit('focusFunc', '/search')
     },
   },
 }
