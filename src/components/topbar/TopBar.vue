@@ -5,7 +5,7 @@
     </div>
     <div class="middle">
       <slot name="middle">
-        <a-input className="a-inp" ref="SearchInput" placeholder="请输入查询内容" size="large" @click="goSearch('/search')">
+        <a-input ref="SearchInput" placeholder="请输入查询内容" size="large" @focus="focusFunc">
           <a-icon slot="prefix" type="search" />
         </a-input>
       </slot>
@@ -22,6 +22,13 @@ export default {
   data() {
     return {}
   },
+  props: {
+    focusFunc: {
+      type: Function,
+      default: function() {},
+    },
+  },
+
   components: {},
   methods: {
     goSearch(path) {

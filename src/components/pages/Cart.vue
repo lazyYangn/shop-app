@@ -2,7 +2,7 @@
   <div>
     <TopBar>
       <div slot="left" class="iconfont icon-back arrow" @click="goBack"></div>
-      <div slot="middle"></div>
+      <div slot="middle" style="font-weight:bold;font-size:16px">购物车</div>
     </TopBar>
     this is Cart page
   </div>
@@ -20,7 +20,7 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.back()
+      this.$router.go(-1)
     },
   },
 }

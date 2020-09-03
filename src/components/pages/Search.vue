@@ -1,8 +1,11 @@
 <template>
   <div>
     <TopBar>
-      <div slot="left" class="iconfont icon-back arrow" @click="goBack"></div>
-      <div slot="right" class="iconfont icon-search search"></div>
+      <div slot="left" class="iconfont icon-back1 arrow" @click="goBack"></div>
+      <div slot="middle">
+        <a-input size="large" />
+      </div>
+      <div slot="right" class="iconfont icon-search search" @click="search"></div>
     </TopBar>
     this is search
   </div>
@@ -20,7 +23,10 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.back()
+      this.$router.go(-1)
+    },
+    search() {
+      localStorage.getItem()
     },
   },
 }
@@ -28,6 +34,6 @@ export default {
 
 <style scoped>
 .arrow .search {
-  font-size: 24px;
+  font-size: 20px;
 }
 </style>

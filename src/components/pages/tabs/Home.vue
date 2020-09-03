@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TopBar>
+    <TopBar :focusFunc="search">
       <div slot="right" class="iconfont icon-gouwuchezhengpin" @click="goto('/cart')"></div>
     </TopBar>
     <div>this is home</div>
@@ -17,6 +17,9 @@ export default {
   methods: {
     goto(path) {
       this.$router.push({ path })
+    },
+    search() {
+      this.$router.push({ path: '/search' })
     },
   },
 }
