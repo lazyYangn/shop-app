@@ -1,0 +1,43 @@
+<template>
+  <div>
+    <div class="product-card">
+      <div class="product-img"></div>
+      <div class="product-desc">
+        <div style="color:rgb(0 0 0 /.5)">{{ product.name }}</div>
+        <div style="color:#fa6400">{{ product.price }}</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Product',
+  data() {
+    return {}
+  },
+  props: {
+    product: Object,
+  },
+}
+</script>
+
+<style scoped>
+.product-card {
+  background-color: #fff;
+  height: 178px;
+  width: 147px;
+  border-radius: 15px;
+}
+.product-img {
+  background-color: #e5e5e5;
+  height: 100px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+.product-desc {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+</style>

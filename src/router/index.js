@@ -7,6 +7,7 @@ import Order from '@/components/pages/tabs/Order'
 import Account from '@/components/pages/tabs/Account'
 import Cart from '@/components/pages/Cart'
 import Search from '@/components/pages/Search'
+import SearchResult from '@/components/pages/SearchResult'
 
 Vue.use(VueRouter)
 
@@ -24,6 +25,7 @@ const routes = [
   },
   { path: '/cart', name: 'cart', component: Cart },
   { path: '/search', name: 'search', component: Search },
+  { path: '/searchresult', name: 'searchresult', component: SearchResult },
 ]
 
 const router = new VueRouter({

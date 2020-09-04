@@ -5,8 +5,8 @@
     </div>
     <div class="middle">
       <slot name="middle">
-        <a-input ref="SearchInput" placeholder="请输入查询内容" size="large" @focus="focusFunc">
-          <a-icon slot="prefix" type="search" />
+        <a-input ref="SearchInput" placeholder="请输入查询内容" size="large" @focus="focusFunc" v-model="searchContent">
+          <a-icon slot="prefix" type="edit" />
         </a-input>
       </slot>
     </div>
@@ -20,17 +20,26 @@
 export default {
   name: 'TopBar',
   data() {
-    return {}
+    return {
+      searchContent: '',
+      timer: null,
+    }
   },
   props: {},
 
   components: {},
   methods: {
-    goSearch(path) {
-      this.$router.push({ path })
-    },
     focusFunc() {
       this.$emit('focusFunc', '/search')
+    },
+  },
+  watch: {
+    searchContent(newVal) {
+      clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
+        //输入第一个字符之后在500之内输入第二个字符会重新进入方法然后清除timer
+        this.$emit('searchCon', newVal)
+      }, 500)
     },
   },
 }
