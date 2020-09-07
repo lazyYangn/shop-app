@@ -16,8 +16,8 @@
         <div class="history-search-content">
           <div
             class="history-search-content-item"
-            v-for="item in historySearch"
-            :key="item + item"
+            v-for="(item,index) in historySearch"
+            :key="item + index"
           >{{ item }}</div>
         </div>
       </div>
