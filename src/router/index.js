@@ -8,6 +8,9 @@ import Account from '@/components/pages/tabs/Account'
 import Cart from '@/components/pages/Cart'
 import Search from '@/components/pages/Search'
 import SearchResult from '@/components/pages/SearchResult'
+import OnBoarDing from '@/components/pages/OnBoarDing'
+import Login from '@/components/pages/Login'
+import Register from '@/components/pages/Register'
 
 Vue.use(VueRouter)
 
@@ -23,9 +26,12 @@ const routes = [
       { path: 'account', component: Account },
     ],
   },
+  { path: '/onboarding', name: 'onboarding', component: OnBoarDing },
   { path: '/cart', name: 'cart', component: Cart },
   { path: '/search', name: 'search', component: Search },
   { path: '/searchresult', name: 'searchresult', component: SearchResult },
+  { path: '/login', name: 'login', component: Login },
+  { path: '/register', name: 'register', component: Register },
 ]
 
 const router = new VueRouter({
