@@ -12,9 +12,6 @@
         <a-icon type="right" />
       </a-list-item>
     </a-list>
-    <a-modal title="提示" :visible="visible" :confirm-loading="confirmLoading" @ok="handleOk" @cancel="handleCancel">
-      <p>{{ ModalText }}</p>
-    </a-modal>
   </div>
 </template>
 
@@ -62,23 +59,23 @@ export default {
   methods: {
     goto(path) {
       if (path === '/onboarding') {
-        this.visible = true
+        this.showConfirm(path)
       } else {
         this.$router.push({ path })
       }
     },
-    handleOk(e) {
-      this.ModalText = '退出中...'
-      this.confirmLoading = true
-      setTimeout(() => {
-        this.visible = false
-        this.confirmLoading = false
-        this.$router.replace({ path: '/onboarding' })
-      }, 2000)
-    },
-    handleCancel(e) {
-      console.log('Clicked cancel button')
-      this.visible = false
+    showConfirm(path) {
+      let t = this
+      this.$confirm({
+        title: '你是否确认退出登录?',
+        okText: '确认',
+        cancelText: '取消',
+        onOk() {
+          console.log('OK')
+          t.$router.replace({ path })
+        },
+        onCancel() {},
+      })
     },
   },
   components: {},
