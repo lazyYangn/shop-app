@@ -35,6 +35,7 @@
 <script>
 import MyContent from '@/components/content/MyContent'
 import TopBar from '@/components/topbar/TopBar'
+import { Http } from '@/kits/Http.js'
 const key = 'updatable'
 export default {
   name: 'Register',
@@ -85,18 +86,30 @@ export default {
       this.$router.replace({ path: '/login' })
     },
     sub(formName) {
-      this.$refs[formName].validate((valid) => {
-        console.log(valid)
-        this.$message.loading({ content: 'Loading...', key })
+      this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          setTimeout(() => {
-            this.$message.success({ content: '注册成功!', key, duration: 2 })
+          this.$message.loading({ content: 'Loading...', key })
+          // setTimeout(() => {
+          //   Http('/register', this.form)
+          //     .then((res) => {
+          //       console.log(res)
+          //       this.$message.success({ content: res, key, duration: 2 })
+          //       this.goLogin()
+          //     })
+          //     .catch((err) => {
+          //       console.log(err)
+          //       this.$message.error({ content: err, key, duration: 2 })
+          //     })
+          // }, 1000)
+          let res = await Http('/register', this.form)
+          try {
+            console.log(res)
+            this.$message.success({ content: res.msg, key, duration: 2 })
             this.goLogin()
-          }, 1000)
-        } else {
-          setTimeout(() => {
-            this.$message.error({ content: '注册失败!', key, duration: 2 })
-          }, 1000)
+          } catch (err) {
+            console.log(err)
+            this.$message.error({ content: err, key, duration: 2 })
+          }
         }
       })
     },

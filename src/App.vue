@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import { getCachVal } from '@/kits/LocalStorage.js'
 export default {
   name: 'app',
   components: {},
@@ -20,7 +21,11 @@ export default {
       //此时假设从index页面跳转到pointList页面
       // console.log(to); // "/pointList"
       // console.log(from); // “/index”
-
+      if (to.path == '/main/account') {
+        if (!getCachVal('token') || getCachVal('token').length <= 0) {
+          this.$router.replace({ path: '/login' })
+        }
+      }
       if ((to.path == '/search' && from.path == '/main/home') || (to.path == '/main/home' && from.path == '/search')) {
         const routeDeep = ['/main/home', '/search']
         const toDepth = routeDeep.indexOf(to.path)

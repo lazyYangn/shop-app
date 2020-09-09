@@ -39,28 +39,12 @@
 <script>
 import MyContent from '@/components/content/MyContent'
 import TopBar from '@/components/topbar/TopBar'
+import { Http } from '@/kits/Http.js'
+import { setCachVal } from '@/kits/LocalStorage.js'
 const key = 'updatable'
 export default {
   name: 'Login',
   data() {
-    let validateMail = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入邮箱'))
-      } else {
-        callback()
-      }
-    }
-    let validatePwd = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('密码不能为空'))
-      } else if (value.trim().length <= 3) {
-        callback(new Error('密码长度不能小于3'))
-      } else if (value.indexOf(' ') >= 0) {
-        callback(new Error('密码格式不正确'))
-      } else {
-        callback()
-      }
-    }
     return {
       form: {
         email: '',
@@ -68,13 +52,14 @@ export default {
       },
       rules: {
         email: [
-          { validator: validateMail, trigger: 'blur' },
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
           { type: 'email', message: '请输入合法的邮箱地址', trigger: 'blur' },
         ],
-        pwd: [{ validator: validatePwd, trigger: 'blur' }],
+        pwd: [{ required: true, message: '请输入密码', trigger: 'blur' }],
       },
     }
   },
+
   components: {
     MyContent,
     TopBar,
@@ -90,18 +75,22 @@ export default {
       this.$router.replace({ path: '/main/home' })
     },
     sub(formName) {
-      this.$refs[formName].validate((valid) => {
-        console.log(valid)
-        this.$message.loading({ content: 'Loading...', key })
+      this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          setTimeout(() => {
-            this.$message.success({ content: '登录成功!', key, duration: 2 })
+          this.$message.loading({ content: 'Loading...', key })
+          let res = await Http('/login', this.form)
+          try {
+            console.log(res)
+            setCachVal('token', res.data.token)
+            setCachVal('username', res.data.user.username)
+            setCachVal('email', res.data.user.email)
+            this.$message.success({ content: res.msg, key, duration: 2 })
             this.goTo()
-          }, 1000)
+          } catch (err) {
+            this.$message.error({ content: err.msg, key, duration: 2 })
+          }
         } else {
-          setTimeout(() => {
-            this.$message.error({ content: '登录失败!', key, duration: 2 })
-          }, 1000)
+          return
         }
       })
     },

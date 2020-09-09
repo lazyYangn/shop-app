@@ -12,3 +12,12 @@ export const setArray = (key, value) => {
 export const clearArray = (key) => {
   localStorage.removeItem(key)
 }
+export const setCachVal = (key, value) => {
+  localStorage.setItem(key, value)
+}
+export const getCachVal = (key) => {
+  return localStorage.getItem(key)
+}
+export const clearCachVal = () => {
+  return localStorage.clear()
+}

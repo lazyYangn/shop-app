@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { clearCachVal } from '@/kits/LocalStorage.js'
 const menu = [
   {
     name: '个人信息',
@@ -72,6 +73,7 @@ export default {
         cancelText: '取消',
         onOk() {
           console.log('OK')
+          clearCachVal()
           t.$router.replace({ path })
         },
         onCancel() {},
