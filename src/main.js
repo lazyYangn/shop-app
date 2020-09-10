@@ -4,9 +4,11 @@ Vue.config.productionTip = false
 import router from './router'
 import './antd'
 import './assets/css/common.css'
+import store from './store'
 
 new Vue({
   router,
+  store,
   render: (h) => h(App),
 }).$mount('#app')
 

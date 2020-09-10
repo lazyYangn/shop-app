@@ -24,8 +24,8 @@ export default {
   bottom: 0px;
   right: 0;
   left: 0;
-  /* background-color: #fff;
-  box-shadow: 0px 0px 8px #e3e3e3; */
+  background-color: #fff;
+  box-shadow: 0px 0px 8px #e3e3e3;
   padding: 16px;
   height: 59px;
   display: flex;
