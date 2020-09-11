@@ -18,7 +18,11 @@ const store = new Vuex.Store({
       state.cartDate.push(item)
     },
     increaseCart(state, index) {
-      state.cartDate[index].count++
+      if (state.cartDate[index].count < 99) {
+        state.cartDate[index].count++
+      } else {
+        return
+      }
     },
     decreaseCart(state, index) {
       if (state.cartDate[index].count <= 1) {
