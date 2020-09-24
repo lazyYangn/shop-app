@@ -7,7 +7,7 @@
           <div class="iconfont icon-home "></div>
         </div>
       </TabBarItem>
-      <TabBarItem name="产品" path="/main/product">
+      <TabBarItem name="分类" path="/main/category">
         <div slot="icon">
           <div class="iconfont icon-product "></div>
         </div>

@@ -27,27 +27,15 @@
 import MyContent from '@/components/content/MyContent'
 import TopBar from '@/components/topbar/TopBar'
 import ProductCard from '@/components/product/Product'
+import { HttpGql, ImgUrl } from '@/kits/Http.js'
 
-let data = [
-  { name: 'MacBook', price: '￥ 20000' },
-  { name: 'iponeX', price: '￥ 10000' },
-  { name: '华为', price: '￥ 8000' },
-  { name: 'oppo', price: '￥ 5000' },
-  { name: 'vivo', price: '￥ 4000' },
-  { name: '三星', price: '￥ 9000' },
-  { name: '锤子', price: '￥ 20000' },
-  { name: '荣耀', price: '￥ 10000' },
-  { name: '360', price: '￥ 8000' },
-  { name: '1加', price: '￥ 5000' },
-  { name: '努比亚', price: '￥ 4000' },
-  { name: '360', price: '￥ 9000' },
-]
 export default {
   name: 'SearchResult',
   data() {
     return {
-      data,
-      searchContent: this.$route.params.content,
+      data: [],
+      // searchContent: this.$route.params.content,
+      searchContent: '',
     }
   },
   components: {
@@ -55,17 +43,42 @@ export default {
     MyContent,
     ProductCard,
   },
-  mounted() {
-    this.data = this.data.filter((item) => {
-      return item.name.includes(this.searchContent)
-    })
+  created() {
+    //拿到上个页面的参数
+    //进行搜索
+    this.searchContent = this.$route.params.content
+    this.search()
   },
   methods: {
     close() {
-      this.$router.go(-1)
+      this.$router.replace({ path: 'main/home' })
     },
     goSearch() {
       this.$router.push({ path: '/search' })
+    },
+    async search() {
+      let pageCount = 5
+      let p = {
+        query: `{
+          goods(count:${pageCount},name:"${this.searchContent}",desc:"${this.searchContent}"){
+          id
+          name
+          price
+          gooddesc
+          imgpath
+        }
+        }`,
+      }
+      try {
+        let res = await HttpGql(p)
+        console.log(res)
+        this.data = res.data.goods
+        this.data.goods = res.data.goods.map((item) => {
+          item.imgpath = ImgUrl + '/' + item.imgpath
+        })
+      } catch (error) {
+        console.log(error)
+      }
     },
   },
 }

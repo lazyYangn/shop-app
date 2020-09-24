@@ -1,10 +1,12 @@
 <template>
-  <div>
-    <div class="product-card">
-      <div class="product-img"></div>
-      <div class="product-desc">
-        <div style="color:rgb(0 0 0 /.5)">{{ product.name }}</div>
-        <div style="color:#fa6400">{{ product.price }}</div>
+  <div class="product-card">
+    <div class="product-img" :style="imgStyle"></div>
+    <div class="product-desc">
+      <div style="color:rgb(0 0 0 / 0.5)">
+        {{ product.name }}
+      </div>
+      <div style="color:#FA6400;">
+        {{ price }}
       </div>
     </div>
   </div>
@@ -12,12 +14,20 @@
 
 <script>
 export default {
-  name: 'Product',
-  data() {
-    return {}
-  },
+  name: 'ProductCard',
   props: {
     product: Object,
+  },
+  computed: {
+    price() {
+      return '¥ ' + this.product.price
+    },
+    imgStyle() {
+      return {
+        backgroundImage: `url(${this.product.imgpath})`,
+        backgroundSize: 'cover',
+      }
+    },
   },
 }
 </script>
@@ -25,19 +35,23 @@ export default {
 <style scoped>
 .product-card {
   background-color: #fff;
-  height: 178px;
-  width: 147px;
+  height: 167px;
+  width: 138px;
   border-radius: 15px;
+  box-shadow: 0px 1px 8px #e3e3e3;
 }
+
 .product-img {
   background-color: #e5e5e5;
-  height: 100px;
+  height: 107px;
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
 }
+
 .product-desc {
   padding: 12px;
   display: flex;
   flex-direction: column;
+  font-size: 14px;
 }
 </style>

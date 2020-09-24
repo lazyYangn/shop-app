@@ -17,5 +17,6 @@ export default {
 .my-content {
   padding: 24px;
   height: 100vh;
+  margin-bottom: 55px;
 }
 </style>

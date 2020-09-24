@@ -1,21 +1,22 @@
 <template>
   <div>
-    <TopBar @focusFunc="goto">
-      <div slot="right" class="iconfont icon-gouwuchezhengpin" @click="goto('/cart')"></div>
+    <TopBar @focusFunc="goto('search')">
+      <div slot="right" class="iconfont icon-gouwuchezhengpin" @click="goto('cart')"></div>
     </TopBar>
     <MyContent>
       <a-carousel :after-change="onChange">
-        <div><h3>1</h3></div>
-        <div><h3>2</h3></div>
-        <div><h3>3</h3></div>
-        <div><h3>4</h3></div>
+        <div v-for="(item, index) in homeImgs" :style="imgStyle(item)" :key="item">
+          <h3>{{ index + 1 }}</h3>
+        </div>
       </a-carousel>
-      <div class="title">
-        <div class="title-left">新产品</div>
-        <div class="title-right">查看全部</div>
-      </div>
-      <div class="product-card-list">
-        <ProductCard style="flex-shrink: 0;margin-right:12px;" v-for="item in 6" :key="item" :product="productData"></ProductCard>
+      <div v-for="item in categorys" :key="item.id">
+        <div class="title">
+          <div class="title-left">{{ item.name }}</div>
+          <div class="title-right" @click="goto('goodscategory', { content: item.id })">查看全部</div>
+        </div>
+        <div class="product-card-list">
+          <ProductCard style="flex-shrink: 0;margin-right:12px;" v-for="item1 in item.goods" :product="item1" :key="item1.id"></ProductCard>
+        </div>
       </div>
       <div class="title">
         <div class="title-left">类别</div>
@@ -35,6 +36,7 @@ import TopBar from '@/components/topbar/TopBar'
 import MyContent from '@/components/content/MyContent'
 import ProductCard from '@/components/product/Product'
 import BScroll from 'better-scroll'
+import { HttpGql, ImgUrl } from '@/kits/Http'
 export default {
   name: 'Home',
   components: {
@@ -43,21 +45,26 @@ export default {
     ProductCard,
     BScroll,
   },
-  methods: {
-    goto(path) {
-      this.$router.push({ path })
-    },
-    onChange(a, b, c) {
-      // console.log(a, b, c)
-    },
-  },
   data() {
     return {
-      productData: {
-        name: 'Iphone x 64',
-        price: '¥ 10000',
-      },
+      categorys: [],
+      homeImgs: [],
     }
+  },
+  created() {
+    this.initData()
+  },
+  computed: {
+    imgStyle() {
+      return (url) => {
+        return url && url !== ''
+          ? {
+              backgroundImage: `url(${url})`,
+              backgroundSize: 'cover',
+            }
+          : ''
+      }
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -79,6 +86,65 @@ export default {
         }
       })
     })
+  },
+  methods: {
+    goto(name, params) {
+      params
+        ? this.$router.push({
+            name,
+            params,
+          })
+        : this.$router.push({ name })
+    },
+    onChange(a, b, c) {
+      // console.log(a, b, c)
+    },
+    async initData() {
+      let t = '["03","06"]'
+      let gql = {
+        query: `
+                        {
+                            homeImgs
+                            categorys(type:${t}) {
+                                id
+                                dictid
+                                name
+                                goods(count:5){
+                                    id
+                                    name
+                                    price
+                                    imgpath
+                                }
+                            }
+                        }
+                    `,
+      }
+      try {
+        let res = await HttpGql(gql)
+        for (let c of res.data.categorys) {
+          c.goods = c.goods.map((item) => {
+            item.imgpath = ImgUrl + item.imgpath
+            return item
+          })
+        }
+        this.categorys = res.data.categorys
+        this.homeImgs = res.data.homeImgs
+      } catch (error) {
+        let goods = []
+        for (let item of [1, 2, 3, 4, 5]) {
+          goods.push({
+            id: item,
+            name: '产品名称',
+            price: 0,
+          })
+          this.homeImgs.push('')
+        }
+        this.categorys.push({
+          name: '商品类别',
+          goods,
+        })
+      }
+    },
   },
 }
 </script>

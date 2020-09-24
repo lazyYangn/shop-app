@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '@/components/pages/Main'
 import Home from '@/components/pages/tabs/Home'
-import Product from '@/components/pages/tabs/Product'
+import Category from '@/components/pages/tabs/Category'
 import Order from '@/components/pages/tabs/Order'
 import Account from '@/components/pages/tabs/Account'
 import Cart from '@/components/pages/Cart'
@@ -11,6 +11,7 @@ import SearchResult from '@/components/pages/SearchResult'
 import OnBoarDing from '@/components/pages/OnBoarDing'
 import Login from '@/components/pages/Login'
 import Register from '@/components/pages/Register'
+import GoodsCategory from '@/components/pages/GoodsCategory'
 
 Vue.use(VueRouter)
 
@@ -21,7 +22,7 @@ const routes = [
     component: Main,
     children: [
       { path: 'home', component: Home },
-      { path: 'product', component: Product },
+      { path: 'category', component: Category },
       { path: 'order', component: Order },
       { path: 'account', component: Account },
     ],
@@ -32,6 +33,7 @@ const routes = [
   { path: '/searchresult', name: 'searchresult', component: SearchResult },
   { path: '/login', name: 'login', component: Login },
   { path: '/register', name: 'register', component: Register },
+  { path: '/goodscategory', name: 'goodscategory', component: GoodsCategory },
 ]
 
 const router = new VueRouter({

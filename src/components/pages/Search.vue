@@ -14,11 +14,7 @@
           </div>
         </div>
         <div class="history-search-content">
-          <div
-            class="history-search-content-item"
-            v-for="(item,index) in historySearch"
-            :key="item + index"
-          >{{ item }}</div>
+          <div @click="searchByHistory(item)" class="history-search-content-item" v-for="(item, index) in historySearch" :key="item + index">{{ item }}</div>
         </div>
       </div>
     </MyContent>
@@ -26,16 +22,17 @@
 </template>
 
 <script>
-import TopBar from "@/components/topbar/TopBar";
-import MyContent from "@/components/content/MyContent";
-import { getArray, setArray, clearArray } from "@/kits/LocalStorage.js";
+import TopBar from '@/components/topbar/TopBar'
+import MyContent from '@/components/content/MyContent'
+import { getArray, setArray, clearArray } from '@/kits/LocalStorage.js'
+import SearchResultVue from './SearchResult.vue'
 export default {
-  name: "Search",
+  name: 'Search',
   data() {
     return {
-      searchContent: "",
-      historySearch: getArray("historySearch"), //本项目的获取localstorage 是线性获取 不是异步获取
-    };
+      searchContent: '',
+      historySearch: getArray('historySearch'), //本项目的获取localstorage 是线性获取 不是异步获取
+    }
   },
   components: {
     TopBar,
@@ -43,28 +40,36 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.go(-1);
+      this.$router.replace({ path: 'main/home' })
     },
     search() {
-      if (this.searchContent !== "") {
-        setArray("historySearch", this.searchContent);
+      if (this.searchContent !== '') {
+        setArray('historySearch', this.searchContent)
         this.$router.push({
-          name: "searchresult",
+          name: 'searchresult',
           params: { content: this.searchContent },
-        }); //传参
+        }) //传参
       } else {
-        this.$message.info("请先输入要搜索的东西");
+        this.$message.info('请先输入要搜索的东西')
       }
     },
     searchContentHandle(content) {
-      this.searchContent = content;
+      this.searchContent = content
+    },
+    searchByHistory(content) {
+      this.$router.push({
+        name: 'searchresult',
+        params: {
+          content,
+        },
+      })
     },
     clearLacalStorage() {
-      clearArray("historySearch");
-      this.historySearch = [];
+      clearArray('historySearch')
+      this.historySearch = []
     },
   },
-};
+}
 </script>
 
 <style scoped>

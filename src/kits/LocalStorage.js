@@ -13,8 +13,10 @@ export const getArray = (key) => {
 }
 export const setArray = (key, value) => {
   let arr = getArray(key)
-  arr.push(value)
-  localStorage.setItem(key, arr.toString())
+  if (arr.indexOf(value) < 0) {
+    arr.push(value)
+    localStorage.setItem(key, arr.toString())
+  }
 }
 export const clearArray = (key) => {
   localStorage.removeItem(key)

@@ -32,7 +32,6 @@ export default {
   },
   methods: {
     doAcitve() {
-      console.log(this.path)
       if (this.$route.path != this.path) {
         this.$router.replace({ path: this.path })
       }
