@@ -9,13 +9,13 @@
 
 <script>
 export default {
-  name: 'FooterBar',
+  name: "FooterBar",
   data() {
-    return {}
+    return {};
   },
   methods: {},
   components: {},
-}
+};
 </script>
 
 <style scoped>

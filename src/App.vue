@@ -7,46 +7,42 @@
 </template>
 
 <script>
-import { getCachVal } from "@/kits/LocalStorage.js";
+import { getCachVal } from '@/kits/LocalStorage.js'
 export default {
-  name: "app",
+  name: 'app',
   components: {},
   data() {
     return {
-      transitionName: "",
-    };
+      transitionName: '',
+    }
   },
   watch: {
     $route(to, from) {
       //此时假设从index页面跳转到pointList页面
       // console.log(to); // "/pointList"
       // console.log(from); // “/index”
-      if (to.path == "/main/account") {
-        if (!getCachVal("token") || getCachVal("token").length <= 0) {
-          this.$router.replace({ path: "/OnBoarDing" });
+      if (to.path == '/main/account') {
+        if (!getCachVal('token') || getCachVal('token').length <= 0) {
+          this.$router.replace({ path: '/OnBoarDing' })
         }
       }
-      if (
-        (to.path == "/search" && from.path == "/main/home") ||
-        (to.path == "/main/home" && from.path == "/search")
-      ) {
-        const routeDeep = ["/main/home", "/search"];
-        const toDepth = routeDeep.indexOf(to.path);
-        const fromDepth = routeDeep.indexOf(from.path);
+      if ((to.path == '/search' && from.path == '/main/home') || (to.path == '/main/home' && from.path == '/search')) {
+        const routeDeep = ['/main/home', '/search']
+        const toDepth = routeDeep.indexOf(to.path)
+        const fromDepth = routeDeep.indexOf(from.path)
         if (fromDepth >= 0) {
-          this.transitionName =
-            toDepth > fromDepth ? "fold-left" : "fold-right";
+          this.transitionName = toDepth > fromDepth ? 'fold-left' : 'fold-right'
         }
       } else {
-        this.transitionName = "";
+        this.transitionName = ''
       }
     },
   },
-};
+}
 </script>
 
 <style>
-@import "./assets/iconfont/iconfont.css";
+@import './assets/iconfont/iconfont.css';
 .fold-left-enter-active {
   animation-name: fold-left-in;
   animation-duration: 0.3s;

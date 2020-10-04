@@ -3,7 +3,7 @@
     <TopBar @focusFunc="goto('search')">
       <div slot="right" class="iconfont icon-gouwuchezhengpin" @click="goto('cart')"></div>
     </TopBar>
-    <MyContent>
+    <MyContent :refreshFunc="refresh" pull>
       <a-carousel :after-change="onChange">
         <div v-for="(item, index) in homeImgs" :style="imgStyle(item)" :key="item">
           <h3>{{ index + 1 }}</h3>
@@ -12,10 +12,12 @@
       <div v-for="item in categorys" :key="item.id">
         <div class="title">
           <div class="title-left">{{ item.name }}</div>
-          <div class="title-right" @click="goto('goodscategory', { content: item.id })">查看全部</div>
+          <div class="title-right" @click="goCategory('goodscategory', { content: item.id })">
+            查看全部
+          </div>
         </div>
         <div class="product-card-list">
-          <ProductCard style="flex-shrink: 0;margin-right:12px;" v-for="item1 in item.goods" :product="item1" :key="item1.id"></ProductCard>
+          <ProductCard style="flex-shrink: 0; margin-right: 12px" v-for="item1 in item.goods" :product="item1" :key="item1.id"></ProductCard>
         </div>
       </div>
       <div class="title">
@@ -24,7 +26,9 @@
       </div>
       <div class="wrapper" ref="wrapper">
         <ul class="list" ref="list">
-          <div v-for="item in 5" :key="item" style="flex-shrink: 0;margin-right: 12px;width:119px;height:90px;border-radius:15px;background-color:#E5E5E5"></div>
+          <div v-for="(item, index) in moreContent" :key="item + index" class="more-content" :style="MoreContent(item)">
+            <div style="opacity: 0.6">{{ item.name }}</div>
+          </div>
         </ul>
       </div>
     </MyContent>
@@ -37,6 +41,30 @@ import MyContent from '@/components/content/MyContent'
 import ProductCard from '@/components/product/Product'
 import BScroll from 'better-scroll'
 import { HttpGql, ImgUrl } from '@/kits/Http'
+
+let moreContent = [
+  {
+    name: '爆款',
+    backgroundColor: '#F9BEAD',
+    fontColor: '#D84933',
+  },
+  {
+    name: '特价',
+    backgroundColor: '#FBD96D',
+    fontColor: '#B68700',
+  },
+  {
+    name: '二手',
+    backgroundColor: '#DFF8EA',
+    fontColor: '#07A565',
+  },
+  {
+    name: '拼一拼',
+    backgroundColor: '#B1EAFD',
+    fontColor: '#155162',
+  },
+]
+
 export default {
   name: 'Home',
   components: {
@@ -49,6 +77,7 @@ export default {
     return {
       categorys: [],
       homeImgs: [],
+      moreContent,
     }
   },
   created() {
@@ -63,6 +92,14 @@ export default {
               backgroundSize: 'cover',
             }
           : ''
+      }
+    },
+    MoreContent() {
+      return (obj) => {
+        return {
+          backgroundColor: obj.backgroundColor,
+          color: obj.fontColor,
+        }
       }
     },
   },
@@ -88,6 +125,10 @@ export default {
     })
   },
   methods: {
+    goCategory(name, params) {
+      this.$store.state.type = params.content
+      this.$router.push({ name })
+    },
     goto(name, params) {
       params
         ? this.$router.push({
@@ -113,6 +154,9 @@ export default {
                                     id
                                     name
                                     price
+                                    type{
+                                      id
+                                    }
                                     imgpath
                                 }
                             }
@@ -129,6 +173,7 @@ export default {
         }
         this.categorys = res.data.categorys
         this.homeImgs = res.data.homeImgs
+        return true
       } catch (error) {
         let goods = []
         for (let item of [1, 2, 3, 4, 5]) {
@@ -143,7 +188,11 @@ export default {
           name: '商品类别',
           goods,
         })
+        return false
       }
+    },
+    refresh() {
+      return this.initData()
     },
   },
 }
@@ -174,6 +223,7 @@ export default {
   white-space: nowrap; /*当子元素超过父元素宽度的时候，不会折行*/
   margin-left: 24px;
   margin-top: 12px;
+  touch-action: none;
 }
 
 .wrapper .list {
@@ -193,5 +243,17 @@ export default {
 .title-right {
   font-size: 12px;
   color: #b620e0;
+}
+.more-content {
+  flex-shrink: 0;
+  margin-right: 12px;
+  width: 119px;
+  height: 90px;
+  border-radius: 15px;
+  background-color: #e5e5e5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
 }
 </style>

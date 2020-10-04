@@ -45,9 +45,9 @@ export default {
     search() {
       if (this.searchContent !== '') {
         setArray('historySearch', this.searchContent)
+        this.$store.commit('setSearchInput', this.searchContent)
         this.$router.push({
           name: 'searchresult',
-          params: { content: this.searchContent },
         }) //传参
       } else {
         this.$message.info('请先输入要搜索的东西')
@@ -57,11 +57,9 @@ export default {
       this.searchContent = content
     },
     searchByHistory(content) {
+      this.$store.commit('setSearchInput', content)
       this.$router.push({
         name: 'searchresult',
-        params: {
-          content,
-        },
       })
     },
     clearLacalStorage() {

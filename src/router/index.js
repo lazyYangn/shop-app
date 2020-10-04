@@ -12,6 +12,7 @@ import OnBoarDing from '@/components/pages/OnBoarDing'
 import Login from '@/components/pages/Login'
 import Register from '@/components/pages/Register'
 import GoodsCategory from '@/components/pages/GoodsCategory'
+import GoodDetail from '@/components/pages/GoodDetail'
 
 Vue.use(VueRouter)
 
@@ -30,10 +31,15 @@ const routes = [
   { path: '/onboarding', name: 'onboarding', component: OnBoarDing },
   { path: '/cart', name: 'cart', component: Cart },
   { path: '/search', name: 'search', component: Search },
-  { path: '/searchresult', name: 'searchresult', component: SearchResult },
+  {
+    path: '/searchresult',
+    name: 'searchresult',
+    component: SearchResult,
+  },
   { path: '/login', name: 'login', component: Login },
   { path: '/register', name: 'register', component: Register },
   { path: '/goodscategory', name: 'goodscategory', component: GoodsCategory },
+  { path: '/gooddetail/:id', name: 'gooddetail', component: GoodDetail },
 ]
 
 const router = new VueRouter({

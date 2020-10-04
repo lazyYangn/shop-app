@@ -1,16 +1,17 @@
 <template>
   <div>
-    <TopBar @searchInputChangeHandle="searchInputChange">
+    <TopBar @focusFunc="searchInputChange">
       <div @click="back" slot="left" class="iconfont icon-back1" style="font-size: 24px"></div>
-      <div @click="search" slot="right" class="iconfont icon-search" style="font-size: 24px"></div>
     </TopBar>
-    <MyContent>
+    <MyContent :refreshFunc="refresh" pull>
       <div>这是搜索结果</div>
-      <a-list :grid="{ gutter: 16, column: 2 }" :data-source="goods" style="margin-top:16px">
-        <a-list-item slot="renderItem" slot-scope="item">
-          <ProductCard :product="item"></ProductCard>
-        </a-list-item>
-      </a-list>
+      <div v-infinite-scroll="handleInfiniteOnLoad" :infinite-scroll-disabled="busy" :infinite-scroll-distance="10">
+        <a-list :grid="{ gutter: 16, column: 2 }" :data-source="goods" style="margin-top: 16px">
+          <a-list-item slot="renderItem" slot-scope="item">
+            <ProductCard :product="item"></ProductCard>
+          </a-list-item>
+        </a-list>
+      </div>
     </MyContent>
   </div>
 </template>
@@ -19,13 +20,17 @@ import TopBar from '@/components/topbar/TopBar'
 import MyContent from '@/components/content/MyContent'
 import ProductCard from '@/components/product/Product'
 import { HttpGql, ImgUrl } from '@/kits/Http'
+import infiniteScroll from 'vue-infinite-scroll'
 export default {
+  directives: { infiniteScroll },
   name: 'GoodsCategory',
   data() {
     return {
       searchInput: '',
       goods: [],
       type: '',
+      start: 0,
+      busy: false,
     }
   },
   components: {
@@ -34,44 +39,63 @@ export default {
     ProductCard,
   },
   created() {
-    this.type = this.$route.params.content
-    this.searchData()
+    this.type = this.$store.state.type
+    // this.searchData()
   },
   methods: {
     back() {
       this.$router.go(-1)
     },
-    searchData() {
+    async searchData() {
+      let count = 8
       let p = {
         query: `
         {
-          goods(count:5,type:"${this.type}",name:"${this.searchInput}"){
+          goods(start:${this.start},count:${count},type:"${this.type}",name:"${this.searchInput}"){
             id
             name
             price
             imgpath
+            type{
+              id
+            }
           }
         }
         `,
       }
-      HttpGql(p)
-        .then((res) => {
-          this.goods = res.data.goods.map((item) => {
+      try {
+        let res = await HttpGql(p)
+        this.goods = this.goods.concat(
+          res.data.goods.map((item) => {
             item.imgpath = ImgUrl + item.imgpath
             return item
           })
-        })
-        .catch((err) => {})
+        )
+        this.start += count
+        return true
+      } catch (error) {
+        return false
+      }
     },
     search() {
       if (this.searchInput !== '') {
+        this.goods = []
+        this.start = 0
         this.searchData()
       } else {
         this.$message.info('请输入要查询的东西')
       }
     },
-    searchInputChange(content) {
-      this.searchInput = content
+    searchInputChange(path) {
+      this.$router.replace({ path })
+    },
+    refresh() {
+      this.data = []
+      this.start = 0
+      return this.searchData()
+    },
+    handleInfiniteOnLoad() {
+      this.searchData()
     },
   },
 }

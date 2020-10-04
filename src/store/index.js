@@ -11,6 +11,13 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     cartDate: [],
+    searchInput: '',
+    type: '',
+    selectGood: {
+      id: '',
+      type: '',
+    },
+    selectGoods: [],
   },
   //同步修改
   mutations: {
@@ -30,6 +37,21 @@ const store = new Vuex.Store({
       } else {
         state.cartDate[index].count--
       }
+    },
+    setSearchInput(state, newVal) {
+      state.searchInput = newVal
+    },
+    setType(state, newVal) {
+      state.type = newVal
+    },
+    setSelectGood(state, item) {
+      state.selectGood = item
+    },
+    addSelectGoods(state, item) {
+      state.selectGoods.push(item)
+    },
+    popSelectGoods(state, item) {
+      state.selectGoods.pop(item)
     },
   },
   //异步修改
