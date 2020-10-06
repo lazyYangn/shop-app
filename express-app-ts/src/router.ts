@@ -13,4 +13,8 @@ export const router = (app: Express) => {
   app.post('/api/goods', api.goods)
 
   app.post('/api/visited', api.visited)
+
+  app.post('/api/test2main', api.test2main)
+
+  app.post('/api/testmainlist', api.testmainlist)
 }

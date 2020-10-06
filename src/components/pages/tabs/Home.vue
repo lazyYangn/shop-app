@@ -1,24 +1,40 @@
 <template>
   <div>
     <TopBar @focusFunc="goto('search')">
-      <div slot="right" class="iconfont icon-gouwuchezhengpin" @click="goto('cart')"></div>
+      <div
+        slot="right"
+        class="iconfont icon-gouwuchezhengpin"
+        @click="goto('cart')"
+      ></div>
     </TopBar>
     <MyContent :refreshFunc="refresh" pull>
       <a-carousel :after-change="onChange">
-        <div v-for="(item, index) in homeImgs" :style="imgStyle(item)" :key="item">
+        <div
+          v-for="(item, index) in homeImgs"
+          :style="imgStyle(item)"
+          :key="item"
+        >
           <h3>{{ index + 1 }}</h3>
         </div>
       </a-carousel>
       <div v-for="item in categorys" :key="item.id">
         <div class="title">
           <div class="title-left">{{ item.name }}</div>
-          <div class="title-right" @click="goCategory('goodscategory', { content: item.id })">
+          <div
+            class="title-right"
+            @click="goCategory('goodscategory', { content: item.id })"
+          >
             查看全部
           </div>
         </div>
-        <div class="product-card-list">
-          <ProductCard style="flex-shrink: 0; margin-right: 12px" v-for="item1 in item.goods" :product="item1" :key="item1.id"></ProductCard>
-        </div>
+        <HScroll>
+          <ProductCard
+            style="flex-shrink: 0; margin-right: 12px"
+            v-for="item1 in item.goods"
+            :product="item1"
+            :key="item1.id"
+          ></ProductCard>
+        </HScroll>
       </div>
       <div class="title">
         <div class="title-left">类别</div>
@@ -26,7 +42,12 @@
       </div>
       <div class="wrapper" ref="wrapper">
         <ul class="list" ref="list">
-          <div v-for="(item, index) in moreContent" :key="item + index" class="more-content" :style="MoreContent(item)">
+          <div
+            v-for="(item, index) in moreContent"
+            :key="item + index"
+            class="more-content"
+            :style="MoreContent(item)"
+          >
             <div style="opacity: 0.6">{{ item.name }}</div>
           </div>
         </ul>
@@ -36,98 +57,101 @@
 </template>
 
 <script>
-import TopBar from '@/components/topbar/TopBar'
-import MyContent from '@/components/content/MyContent'
-import ProductCard from '@/components/product/Product'
-import BScroll from 'better-scroll'
-import { HttpGql, ImgUrl } from '@/kits/Http'
+import TopBar from "@/components/topbar/TopBar";
+import MyContent from "@/components/content/MyContent";
+import ProductCard from "@/components/product/Product";
+import BScroll from "better-scroll";
+import HScroll from "@/components/scroll/HScroll";
+
+import { HttpGql, ImgUrl } from "@/kits/Http";
 
 let moreContent = [
   {
-    name: '爆款',
-    backgroundColor: '#F9BEAD',
-    fontColor: '#D84933',
+    name: "爆款",
+    backgroundColor: "#F9BEAD",
+    fontColor: "#D84933",
   },
   {
-    name: '特价',
-    backgroundColor: '#FBD96D',
-    fontColor: '#B68700',
+    name: "特价",
+    backgroundColor: "#FBD96D",
+    fontColor: "#B68700",
   },
   {
-    name: '二手',
-    backgroundColor: '#DFF8EA',
-    fontColor: '#07A565',
+    name: "二手",
+    backgroundColor: "#DFF8EA",
+    fontColor: "#07A565",
   },
   {
-    name: '拼一拼',
-    backgroundColor: '#B1EAFD',
-    fontColor: '#155162',
+    name: "拼一拼",
+    backgroundColor: "#B1EAFD",
+    fontColor: "#155162",
   },
-]
+];
 
 export default {
-  name: 'Home',
+  name: "Home",
   components: {
     TopBar,
     MyContent,
     ProductCard,
     BScroll,
+    HScroll,
   },
   data() {
     return {
       categorys: [],
       homeImgs: [],
       moreContent,
-    }
+    };
   },
   created() {
-    this.initData()
+    this.initData();
   },
   computed: {
     imgStyle() {
       return (url) => {
-        return url && url !== ''
+        return url && url !== ""
           ? {
               backgroundImage: `url(${url})`,
-              backgroundSize: 'cover',
+              backgroundSize: "cover",
             }
-          : ''
-      }
+          : "";
+      };
     },
     MoreContent() {
       return (obj) => {
         return {
           backgroundColor: obj.backgroundColor,
           color: obj.fontColor,
-        }
-      }
+        };
+      };
     },
   },
   mounted() {
     this.$nextTick(() => {
       // 使用 this.$nextTick 为了确保组件已经渲染完毕
-      let itemWidth = 138 // 这里是设置列表每一项的宽度
-      let margin = 0
+      let itemWidth = 138; // 这里是设置列表每一项的宽度
+      let margin = 0;
       // width是整个列表的宽度
-      let width = (itemWidth + margin) * 5 - margin
+      let width = (itemWidth + margin) * 5 - margin;
       // console.log(width)
-      this.$refs.list.style.width = width + 'px' // 设置.list的宽度的宽度
+      this.$refs.list.style.width = width + "px"; // 设置.list的宽度的宽度
       this.$nextTick(() => {
         if (!this.picScroll) {
           this.picScroll = new BScroll(this.$refs.wrapper, {
             scrollX: true,
-            eventPassthrough: 'vertical', // 忽略竖直方向的滚动
-          })
+            eventPassthrough: "vertical", // 忽略竖直方向的滚动
+          });
         } else {
-          this.picScroll.refresh()
+          this.picScroll.refresh();
         }
-      })
-    })
+      });
+    });
   },
   methods: {
     goCategory(name, params) {
-      this.$store.state.type = params.content
-      this.$router.push({ name })
+      this.$store.state.type = params.content;
+      this.$router.push({ name });
     },
     goto(name, params) {
       params
@@ -135,13 +159,13 @@ export default {
             name,
             params,
           })
-        : this.$router.push({ name })
+        : this.$router.push({ name });
     },
     onChange(a, b, c) {
       // console.log(a, b, c)
     },
     async initData() {
-      let t = '["03","06"]'
+      let t = '["03","06"]';
       let gql = {
         query: `
                         {
@@ -162,40 +186,40 @@ export default {
                             }
                         }
                     `,
-      }
+      };
       try {
-        let res = await HttpGql(gql)
+        let res = await HttpGql(gql);
         for (let c of res.data.categorys) {
           c.goods = c.goods.map((item) => {
-            item.imgpath = ImgUrl + item.imgpath
-            return item
-          })
+            item.imgpath = ImgUrl + item.imgpath;
+            return item;
+          });
         }
-        this.categorys = res.data.categorys
-        this.homeImgs = res.data.homeImgs
-        return true
+        this.categorys = res.data.categorys;
+        this.homeImgs = res.data.homeImgs;
+        return true;
       } catch (error) {
-        let goods = []
+        let goods = [];
         for (let item of [1, 2, 3, 4, 5]) {
           goods.push({
             id: item,
-            name: '产品名称',
+            name: "产品名称",
             price: 0,
-          })
-          this.homeImgs.push('')
+          });
+          this.homeImgs.push("");
         }
         this.categorys.push({
-          name: '商品类别',
+          name: "商品类别",
           goods,
-        })
-        return false
+        });
+        return false;
       }
     },
     refresh() {
-      return this.initData()
+      return this.initData();
     },
   },
-}
+};
 </script>
 <style scoped>
 .ant-carousel >>> .slick-slide {
@@ -209,14 +233,6 @@ export default {
 
 .ant-carousel >>> .slick-slide h3 {
   color: #fff;
-}
-.product-card-list {
-  display: flex;
-  overflow-x: auto;
-  margin-top: 16px;
-}
-::-webkit-scrollbar {
-  display: none;
 }
 .wrapper {
   overflow: hidden;

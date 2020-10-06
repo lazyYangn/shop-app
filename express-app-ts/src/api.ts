@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { Do, FindFrist } from './mysql'
+import { Do, DoNoConn, DoTx, FindFrist } from './mysql'
 
 export const rootApi = (req: any, resp: any) => {
   console.log(req.query.a)
@@ -114,4 +114,58 @@ export const visited = async (req: any, resp: any) => {
     msg: '成功',
     data: {},
   })
+}
+export const test2main = async (req: any, resp: any) => {
+  const p = req.body
+
+  try {
+    let res = await DoTx((conn) => {
+      let a = DoNoConn({
+        conn,
+        sql: 'insert into test_main1 values (?,?) ',
+        params: [p.table1.id, p.table1.name],
+      })
+      let b = DoNoConn({
+        conn,
+        sql: 'insert into test_main2 values (?,?) ',
+        params: [p.table2.id, p.table2.name],
+      })
+      return [a, b]
+    })
+    resp.json(res)
+  } catch (e) {
+    resp.json(e)
+  }
+}
+
+export const testmainlist = async (req: any, resp: any) => {
+  const p = req.body
+
+  try {
+    let res = await DoTx((conn) => {
+      let md5 = crypto.createHash('md5')
+      let id = md5.update(p.main).digest('hex')
+      let a = DoNoConn({
+        conn,
+        sql: 'insert into test_main values (?,?) ',
+        params: [id, p.main],
+      }).then(() => {
+        let arr: any[] = []
+        for (let item of p.list) {
+          arr.push(
+            DoNoConn({
+              conn,
+              sql: 'insert into test_main_list values (?,?,?) ',
+              params: [item.id, id, item.name],
+            })
+          )
+        }
+        return Promise.all(arr)
+      })
+      return [a]
+    })
+    resp.json(res)
+  } catch (e) {
+    resp.json(e)
+  }
 }
