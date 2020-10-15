@@ -1,18 +1,23 @@
 # shop-app
 
-## Project setup
+## 安装依赖包
 ```
 npm install
 ```
+### 运行db文件夹下的sql文件插入数据库数据
 
-### Compiles and hot-reloads for development
+### 启动页面（根目录下）
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### 打包
 ```
 npm run build
+```
+### 启动服务器
+```
+npm run start
 ```
 
 ### Customize configuration
