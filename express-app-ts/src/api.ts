@@ -13,13 +13,13 @@ export const login = async (req: any, resp: any) => {
   let p = req.body
   let res = await FindFrist('select * from user where id = ? ', [p.id])
   /**
-     userid password
-    userid 去数据库查询 查看是否存在这个用户
-        存在: 拿到数据库中存储的密码，然和发送来的参数中的密码进行比较
-            相同: 需要把用户的一些完整信息和token(身份认证)返回给前台
-            不相同: 直接返回前端 并发送消息“密码错误”
-        不存在：直接返回前端 并发送消息“无此用户/请注册”
-    */
+   userid password
+  userid 去数据库查询 查看是否存在这个用户
+      存在: 拿到数据库中存储的密码，然和发送来的参数中的密码进行比较
+          相同: 需要把用户的一些完整信息和token(身份认证)返回给前台
+          不相同: 直接返回前端 并发送消息“密码错误”
+      不存在：直接返回前端 并发送消息“无此用户/请注册”
+  */
   if (res) {
     let jsonObj = JSON.parse(JSON.stringify(res))
     if (p.pwd === jsonObj.pwd) {
@@ -101,13 +101,13 @@ export const goods = async (req: any, resp: any) => {
 
 export const visited = async (req: any, resp: any) => {
   const p = req.body
-  const res = await FindFrist('select * from user_action where userid =? and goodid =? and type = 1 ', [p.userid, p.goodid])
+  const res = await FindFrist('select * from user_actions where userid =? and goodid =? and type = 1 ', [p.userid, p.goodid])
   let jsonObj = JSON.parse(JSON.stringify(res))
   if (jsonObj && jsonObj.visitedcount) {
     let visitedcount = jsonObj.visitedcount + 1
-    Do('update user_action set visitedcount = ? where userid =? and goodid =? and type = 1  ', [visitedcount, p.userid, p.goodid])
+    Do('update user_actions set visitedcount = ? where userid =? and goodid =? and type = 1  ', [visitedcount, p.userid, p.goodid])
   } else {
-    Do('insert into user_action (userid,goodid,type,visitedcount,sysdate) values (?,?,?,?,(select now())) ', [p.userid, p.goodid, 1, 1])
+    Do('insert into user_actions (userid,goodid,type,visitedcount,sysdate) values (?,?,?,?,(select now())) ', [p.userid, p.goodid, 1, 1])
   }
   resp.json({
     code: 3,
@@ -169,3 +169,89 @@ export const testmainlist = async (req: any, resp: any) => {
     resp.json(e)
   }
 }
+
+export const goodaddcart = async (req: any, resp: any) => {
+  let p = req.body
+  if (p.num === 0) {
+    Do("delete from user_actions where userid= ? and goodid=? and type = 2 ",[p.userid,p.goodid])
+  }else{
+  DoTx((conn) => {
+    const a = DoNoConn({
+      conn,
+      sql:"delete from user_actions where userid= ? and goodid=? and type = 2 ",
+      params:[p.userid,p.goodid],
+    }).then(() => {
+      return DoNoConn({
+        conn,
+        sql:"insert into user_actions (userid,goodid,type,num,sysdate) values (?,?,?,?,(select now())) ",
+        params:[p.userid,p.goodid,2,p.num]
+    })
+    })
+    return [a]
+  })
+}
+  resp.json({
+    code: 1,
+    msg: '添加成功',
+    data: {},
+  })
+}
+
+export const createorder = async (req:any,resp:any) => {
+  const p = req.body
+  try {
+      let md5 = crypto.createHash('md5')
+      let date = new Date()
+      let id = md5.update(date.getUTCMilliseconds().toString()).digest('hex');
+      await DoTx((conn)=>{
+          return [DoNoConn({
+              conn,
+              sql:"insert into `order` values (?,?,?,(select now())) ",
+              params:[id,p.userid,1]
+          }).then(()=>{
+              let arr : Promise<any>[]= []
+              for(let t of p.orderlist){
+                  arr.push(DoNoConn({
+                      conn,
+                      sql:"insert into order_list (orderid,goodid,countbuy,name,gooddesc,price,type,imgpath) values (?,?,?,?,?,?,?,?) ",
+                      params:[id,t.id,t.countbuy,t.name,t.gooddesc,t.price,t.type,t.imgpath]
+                  }))
+              }
+              return Promise.all(arr)
+          })]
+      })
+      resp.json({
+          code:1,
+          msg:"创建成功",
+          data:{}
+      })
+  } catch (e) {
+      resp.json({
+          code:2,
+          msg:"创建订单失败",
+          data:{}
+      })
+  }
+}
+export const resetcart = async (req:any,resp:any)=>{
+  let p = req.body
+  try {
+      let res = await Do("delete from user_actions where userid= ? and type = 2 ",[p.userid])
+      resp.json({
+          code:1,
+          msg:"操作成功",
+          data:res
+      })
+  } catch (error) {
+      resp.json({
+          code:3,
+          msg:"操作失败",
+          data:{
+              error
+          }
+      })
+  }
+  
+}
+
+

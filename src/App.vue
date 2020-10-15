@@ -21,7 +21,7 @@ export default {
       //此时假设从index页面跳转到pointList页面
       // console.log(to); // "/pointList"
       // console.log(from); // “/index”
-      if (to.path == '/main/account') {
+      if (to.path == '/main/account' || to.path == '/main/order') {
         if (!getCachVal('token') || getCachVal('token').length <= 0) {
           this.$router.replace({ path: '/OnBoarDing' })
         }

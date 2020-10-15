@@ -1,12 +1,23 @@
 <template>
   <div class="product-edit">
-    <div class="pic"></div>
+    <div class="pic" :style="imgStyle(product.imgpath)"></div>
     <div class="wrapper-right">
-      <div style="font-size:14px;color:rgb(0 0 0 /0.5);font-weight:bold">{{ product.name }}</div>
-      <div style="font-size:14px;color:#fa6400">{{ showPrice }}</div>
+      <div style="font-size: 14px; color: rgb(0 0 0 /0.5); font-weight: bold">
+        {{ product.name }}
+      </div>
+      <div style="font-size: 14px; color: #fa6400">{{ showPrice }}</div>
       <div class="btn-group">
-        <div class="btn_g" @click="decreaseCart(index)">-</div>
-        <div style="margin:1px 10px">{{ product.count }}</div>
+      <a-popconfirm
+        v-if="product.countbuy <= 1"
+        title="是否从购物车移除该商品?"
+        ok-text="移除"
+        cancel-text="取消"
+        @confirm="confirm"
+      >
+      <div class="btn_g">-</div>
+      </a-popconfirm>
+      <div class="btn_g" v-else @click="decreaseCart(index)">-</div>
+        <div style="margin: 1px 10px">{{ product.countbuy }}</div>
         <div class="btn_g" @click="increaseCart(index)">+</div>
       </div>
     </div>
@@ -14,10 +25,11 @@
 </template>
 
 <script>
+import { Http, HttpGql, ImgUrl } from "@/kits/Http";
 export default {
-  name: 'ProductItem',
+  name: "ProductItem",
   data() {
-    return {}
+    return {};
   },
   props: {
     index: Number,
@@ -25,18 +37,32 @@ export default {
   },
   computed: {
     showPrice() {
-      return '￥' + this.product.price * this.product.count
+      return "￥" + this.product.price * this.product.countbuy;
+    },
+    imgStyle() {
+      return (url) => {
+        return {
+          backgroundImage: `url(${url})`,
+          backgroundSize: "75px 75px",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center  center",
+        };
+      };
     },
   },
   methods: {
     increaseCart(index) {
-      this.$store.commit('increaseCart', this.index)
+      this.$store.dispatch("increaseCart",this.index)
     },
     decreaseCart(index) {
-      this.$store.commit('decreaseCart', this.index)
+      this.$store.dispatch("decreaseCart",this.index)
+    },
+    confirm(e) {
+    this.$message.success('Click on Yes');
+    this.$store.dispatch('decreaseCart',this.index)
     },
   },
-}
+};
 </script>
 
 <style scoped>
@@ -53,6 +79,7 @@ export default {
   width: 75px;
   border-radius: 10px;
   flex: 1;
+  box-shadow: 0px 1px 6px rgb(40 40 40 / 0.2);
 }
 .wrapper-right {
   display: flex;

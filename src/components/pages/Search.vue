@@ -47,18 +47,8 @@
       </div>
       <div style="margin-top: 42px">
         <div class="visited-good-title">近期最流行的商品</div>
-        <div v-for="(item, index) in goodpop" :key="item.id" class="pop-good">
-          <div class="pop-good-item">
-            <div
-              class="iconfont pop-good-left"
-              :class="classCom(index + 1)"
-            ></div>
-            <div class="pop-good-middle">
-              <div>{{ item.name }}</div>
-              <div>{{ item.gooddesc }}</div>
-            </div>
-            <div class="pop-good-right" :style="imgStyle(item.imgpath)"></div>
-          </div>
+        <div v-for="item in goodpop" :key="item.id" class="pop-good">
+          <ProductPop :product="item"></ProductPop>
         </div>
       </div>
     </MyContent>
@@ -69,6 +59,7 @@
 import TopBar from "@/components/topbar/TopBar";
 import MyContent from "@/components/content/MyContent";
 import Product from "@/components/product/Product";
+import ProductPop from "@/components/product/ProductPop";
 import {
   getArray,
   setArray,
@@ -94,24 +85,9 @@ export default {
     MyContent,
     Product,
     HScroll,
+    ProductPop,
   },
-  computed: {
-    imgStyle() {
-      return (url) => {
-        return {
-          backgroundImage: `url(${url})`,
-          backgroundSize: "109px 70px",
-          backgroundPosition: "center center",
-          backgroundRepeat: "no-repeat",
-        };
-      };
-    },
-    classCom() {
-      return (index) => {
-        return "icon-" + index + "01";
-      };
-    },
-  },
+
   created() {
     if (getCachVal("token") && getCachVal("token").length > 0) {
       this.initData(true);
@@ -159,6 +135,9 @@ export default {
               imgpath
               visitedcount
               gooddesc
+              type{
+                id
+              }
             }
            userVisited(userid:"${getCachVal("userid")}",start:0,count:5){
               name
@@ -181,6 +160,9 @@ export default {
               imgpath
               visitedcount
               gooddesc
+              type{
+                id
+              }
             }
         `,
           };
@@ -190,8 +172,9 @@ export default {
           item.imgpath = ImgUrl + item.imgpath;
           return item;
         });
-        this.goodpop = res.data.goodpop.map((item) => {
+        this.goodpop = res.data.goodpop.map((item, index) => {
           item.imgpath = ImgUrl + item.imgpath;
+          item.iconClass = "icon-" + (index + 1) + "01";
           return item;
         });
       } catch (error) {
@@ -230,30 +213,5 @@ export default {
 }
 .pop-good {
   margin-top: 20px;
-}
-.pop-good-item {
-  display: flex;
-  height: 70px;
-  align-items: flex-start;
-  margin: 10px 0;
-}
-.pop-good-left {
-  padding: 10px 0;
-  font-size: 25px;
-  color: rgb(250, 100, 0);
-  font-weight: bold;
-  flex: 1;
-}
-.pop-good-middle {
-  flex: 3;
-  display: flex;
-  padding: 10px 0;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.pop-good-right {
-  width: 70px;
-  height: 70px;
-  flex: 2;
 }
 </style>

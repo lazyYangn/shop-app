@@ -2,7 +2,7 @@
   <MyContent>
     <div class="title">商品类别</div>
     <div class="card-list">
-      <div class="card" v-for="item in categorys" :key="item.id" :style="cardStyle(item)" @click="goto('goodscategory', { content: item.id })">
+      <div class="card" v-for="item in categorys" :key="item.id" :style="cardStyle(item)" @click="gotoGoodsCategory(item.id)">
         <div :class="item.logo"></div>
         <div class="card-right" :style="cardRight(item)">{{ item.name }}</div>
       </div>
@@ -65,14 +65,10 @@ export default {
     },
   },
   methods: {
-    goto(name, params) {
-      params
-        ? this.$router.push({
-            name,
-            params,
-          })
-        : this.$router.push({ name })
-    },
+     gotoGoodsCategory(categoryId){
+            this.$store.commit("setGoodCategory",categoryId)
+            this.$router.push({name:"goodscategory"})
+        },
   },
 }
 </script>

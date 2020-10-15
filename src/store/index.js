@@ -5,6 +5,8 @@
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
+import {Http,ImgUrl} from '@/kits/Http'
+import {getCachVal} from '@/kits/LocalStorage'
 
 Vue.use(Vuex)
 
@@ -18,24 +20,44 @@ const store = new Vuex.Store({
       type: '',
     },
     selectGoods: [],
+    goodCategory:'',
+    selectedOrder:{}
   },
   //同步修改
   mutations: {
-    pushCart(state, item) {
-      state.cartDate.push(item)
+    setGoodCategory(state,newVal){
+      state.goodCategory = newVal
     },
+    initCart(state,data){
+      state.cartDate = data
+    },
+    pushCart(state, item) {
+      let index = -1
+     for (let i = 0; i < state.cartDate.length; i++) {
+       if(state.cartDate[i].id == item.id){
+         index = i
+         break
+       }
+    }
+    if(index > -1){
+      // this.commit('increaseCart',index) 也可以
+      store.commit('increaseCart',index)
+    }else{
+      state.cartDate.push(item)
+    }
+     },
     increaseCart(state, index) {
-      if (state.cartDate[index].count < 99) {
-        state.cartDate[index].count++
+      if (state.cartDate[index].countbuy < 99) {
+        state.cartDate[index].countbuy++
       } else {
         return
       }
     },
     decreaseCart(state, index) {
-      if (state.cartDate[index].count <= 1) {
+      if (state.cartDate[index].countbuy < 1) {
         return
       } else {
-        state.cartDate[index].count--
+        state.cartDate[index].countbuy--
       }
     },
     setSearchInput(state, newVal) {
@@ -53,15 +75,73 @@ const store = new Vuex.Store({
     popSelectGoods(state, item) {
       state.selectGoods.pop(item)
     },
+    removeCart(state,index){
+      if(state.cartDate[index].countbuy === 0){
+          state.cartDate.splice(index,1)
+      }
+    },
+    resetCart(state){
+        state.cartData = []
+    },
+    setSelectedOrder(state,item){
+      state.selectedOrder = item
+    }
   },
   //异步修改
-  actions: {},
+  actions: {
+  pushCart(context,item){
+    item.imgpath = ImgUrl + item.imgpath
+      context.commit("pushCart",item)
+      let cartitem = context.state.cartDate.filter((t)=>(t.id === item.id))
+      doCart(item.id,cartitem.length >0 ? cartitem[0].countbuy : 0)
+  },
+  increaseCart(context,index){
+    context.commit("increaseCart",index)
+    let cartitem = context.state.cartDate[index]
+    doCart(cartitem.id,cartitem.countbuy)
+  },
+  decreaseCart(context,index){
+    context.commit("decreaseCart",index)
+    let cartitem = context.state.cartDate[index]
+    doCart(cartitem.id,cartitem.countbuy)
+    context.commit("removeCart",index)
+  },
+  async order(context){
+    console.log(getCachVal("userid"))
+    const p = {
+        userid:getCachVal("userid"),
+        orderlist:context.state.cartDate
+    }
+    try {
+        let res = await Http("/createorder",p)
+        if (res.code === 1) {
+            await Http("/resetcart",{
+                userid:getCachVal("userid")
+            })
+            context.commit('resetCart')
+            return res
+        }
+    } catch (e) {
+        return e
+    }
+}
+      
+  },
   getters: {
     priceSum(state) {
       let total = 0
-      return '￥' + state.cartDate.reduce((pre, item) => pre + item.price * item.count, total)
+      return '￥' + state.cartDate.reduce((pre, item) => pre + item.price * item.countbuy, total)
     },
   },
 })
+
+const doCart = (goodid,num) => {
+  Http("/goodaddcart",{
+      userid:getCachVal("userid"),
+      goodid,
+      num,
+  })
+}
+
 
 export default store

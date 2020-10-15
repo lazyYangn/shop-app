@@ -36,7 +36,7 @@ const menu = [
   },
   {
     name: '绑定卡片',
-    path: '/card',
+    path:"/testscroll"
   },
   {
     name: '查看版本',

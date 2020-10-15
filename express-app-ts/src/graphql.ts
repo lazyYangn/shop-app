@@ -13,6 +13,8 @@ const typeDefs = gql`
     homeImgs: [String]
     user(id: String): User
     userVisited(userid: String!, start: Int!, count: Int!): [Good]
+    userCart(userid:String!) : [Good]
+    userOrder(userid:String!,start:Int!,count:Int!):[Order]
   }
 
   type Good {
@@ -23,6 +25,7 @@ const typeDefs = gql`
     type: Dict
     imgpath: String
     visitedcount: Int
+    countbuy: Int
   }
 
   type Dict {
@@ -42,6 +45,15 @@ const typeDefs = gql`
     name: String
     visitedGoods(start: Int!, count: Int!): [Good]
   }
+  type Order{
+    id:String
+    orderid:String
+    price:Float
+    goodcount:Int
+    orderdate:String
+    status:Dict
+    goodlist:[Good]
+  }
 `
 const resolvers = {
   Query: {
@@ -56,6 +68,8 @@ const resolvers = {
     user: gr.user,
     userVisited: gr.userVisited,
     goodpop: gr.goodpop,
+    userCart:gr.userCart,
+    userOrder:gr.userOrder,
   },
   Good: {
     type: gr.goodtype,
@@ -66,6 +80,13 @@ const resolvers = {
   User: {
     visitedGoods: gr.visitedGoods,
   },
+  Order:{
+    orderdate:gr.formatOrderdate,
+    price:gr.price,
+    goodcount:gr.goodcount,
+    status:gr.orderStatus,
+    goodlist:gr.goodlist
+  }
 }
 
 export const server = new ApolloServer({

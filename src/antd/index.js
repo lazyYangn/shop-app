@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { Input, Icon, Button, message, List, Carousel, Avatar, Skeleton, Form, FormModel, Checkbox, Modal, Card, Spin } from 'ant-design-vue'
+import { Input, Icon, Button, message, List, Carousel, Avatar, Skeleton, Form, FormModel, Checkbox, Modal, Card, Spin,Popconfirm, } from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
 Vue.use(Input)
 Vue.use(Icon)
@@ -14,6 +14,7 @@ Vue.use(Checkbox)
 Vue.use(Modal)
 Vue.use(Card)
 Vue.use(Spin)
+Vue.use(Popconfirm)
 
 Vue.prototype.$message = message
 message.config({

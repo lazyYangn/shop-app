@@ -10,6 +10,11 @@
       <div slot="middle" style="text-align: center; font-size: 20px">
         商品详情
       </div>
+      <div
+        slot="right"
+        class="iconfont icon-gouwuchezhengpin"
+        @click="goto('cart')"
+      ></div>
     </TopBar>
     <MyContent>
       <a-carousel style="width: 100%">
@@ -64,12 +69,7 @@
         style="border: none; flex: 1"
         @funcHandler="addCarts"
       ></FooterBarItem>
-      <FooterBarItem
-        slot="right"
-        name="购买"
-        style="border: none; background-color: #d8d8d8; flex: 1"
-        @funcHandler="order"
-      ></FooterBarItem>
+      <FooterBarItem slot="right" name="马上购买" style="border:none;background-color:#d8d8d8;flex: 1" @funcHandler="order" />
     </FooterBar>
   </div>
 </template>
@@ -134,15 +134,34 @@ export default {
     },
   },
   methods: {
+    goto(name) {
+      this.$router.push({ name });
+    },
     goBack() {
       this.$store.commit("popSelectGoods");
       this.$router.go(-1);
     },
     addCarts() {
-      console.log("加入购物车");
+      // const userid = getCachVal("userid");
+      // let res = await Http("/goodaddcart", {
+      //   userid,
+      //   goodid: this.product.id,
+      //   num: 1,
+      // });
+      // console.log(res);
+      // this.product.countbuy = 1;
+      // this.$store.commit("pushCart", Object.assign({}, this.product));
+
+        this.$store.dispatch("pushCart",{
+        ...this.product,
+        countbuy: 1,
+      });
+      this.$message.info('添加成功')
     },
     order() {
-      console.log("order");
+        this.product.countbuy = 1
+        this.$store.dispatch("pushCart",Object.assign({},this.product))
+        this.goto("cart")
     },
     async initData() {
       const id =
@@ -169,7 +188,6 @@ export default {
                             price
                             imgpath
                             type {
-                            id
                             name
                             }
                         }

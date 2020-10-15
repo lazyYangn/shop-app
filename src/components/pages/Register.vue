@@ -1,129 +1,152 @@
 <template>
   <div>
-    <TopBar style="background-color:unset;box-shadow:none">
-      <div slot="left" class="iconfont icon-back1 arrow" @click="goBack"></div>
-      <div slot="middle"></div>
-    </TopBar>
-    <MyContent>
-      <div style="margin-bottom:39px">
+    <top-bar style="background-color: unset; box-shadow: unset">
+      <div
+        @click="back"
+        slot="left"
+        class="iconfont icon-back1"
+        style="font-size: 24px"
+      ></div>
+      <div slot="middle" style="font-weight: bold; font-size: 16px"></div>
+    </top-bar>
+    <my-content>
+      <div style="margin-bottom: 39px">
         <div class="title">创建你的账号</div>
         <div class="title-extend">
-          如果你已经有一个账号了？
-          <div style="color:#B620e0" @click="goLogin">登录</div>
+          <div>如果你已经有一个账户？</div>
+          <div
+            @click="login"
+            style="color: #b620e0; margin-left: 8px; font-weight: normal"
+          >
+            登录
+          </div>
         </div>
       </div>
-      <a-form-model ref="registerForm" :rules="rules" layout="vertical" :model="form" style="overflow-y:auto">
-        <a-form-model-item prop="username" label="用户昵称" style="color:rgb(0 0 0 /0.5)">
-          <a-input v-model="form.username" placeholder="输入您的用户名称" />
+      <a-form-model
+        ref="registerform"
+        :rules="rules"
+        layout="vertical"
+        :model="form"
+        style="overflow-y: auto"
+      >
+        <a-form-model-item label="用户昵称" prop="username">
+          <a-input v-model="form.username" placeholder="请输入您的用户昵称" />
         </a-form-model-item>
-        <a-form-model-item prop="email" label="邮箱" style="color:rgb(0 0 0 /0.5)">
-          <a-input v-model="form.email" type="email" placeholder="输入您的邮箱" />
+        <a-form-model-item label="邮箱" prop="mail">
+          <a-input
+            v-model="form.mail"
+            type="email"
+            placeholder="请输入您的邮箱"
+          />
         </a-form-model-item>
-        <a-form-model-item prop="pwd" label="密码" style="color:rgb(0 0 0 /0.5)">
-          <a-input v-model="form.pwd" type="password" placeholder="输入您的密码" />
+        <a-form-model-item label="密码" prop="pwd">
+          <a-input
+            v-model="form.pwd"
+            type="password"
+            placeholder="请输入您的密码"
+          />
         </a-form-model-item>
         <a-form-model-item>
-          <a-button @click="sub('registerForm')" block style="border:none;box-shadow:0 0 8px #e3e3e3;margin-top:24px">
+          <a-button
+            @click="sub('registerform')"
+            block
+            style="
+              margin-top: 24px;
+              border: none;
+              box-shadow: 0px 0px 8px #e3e3e3;
+            "
+          >
             注册
           </a-button>
         </a-form-model-item>
       </a-form-model>
-    </MyContent>
+    </my-content>
   </div>
 </template>
-
 <script>
-import MyContent from '@/components/content/MyContent'
-import TopBar from '@/components/topbar/TopBar'
-import { Http } from '@/kits/Http.js'
-const key = 'updatable'
+import TopBar from "@/components/topbar/TopBar";
+import MyContent from "@/components/content/MyContent";
+import { Http } from "@/kits/Http";
+
+const key = "loadingkey";
 export default {
-  name: 'Register',
   data() {
     let validateMail = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入邮箱'))
+      if (value === "") {
+        callback(new Error("请输入邮箱"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
+
     let validatePwd = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('密码不能为空'))
-      } else if (value.trim().length <= 3) {
-        callback(new Error('密码长度不能小于3'))
-      } else if (value.indexOf(' ') >= 0) {
-        callback(new Error('密码格式不正确'))
+      if (value === "") {
+        callback(new Error("不能为空"));
+      } else if (value.length <= 3) {
+        callback(new Error("密码长度太短"));
+      } else if (value.indexOf(" ") >= 0) {
+        callback(new Error("密码格式不正确"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
+
     return {
       form: {
-        username: '',
-        email: '',
-        pwd: '',
+        username: "",
+        mail: "",
+        pwd: "",
       },
       rules: {
-        username: [{ required: true, message: '请输入用户昵称', trigger: 'blur' }],
-        email: [
-          { validator: validateMail, trigger: 'blur' },
-          { type: 'email', message: '请输入合法的邮箱地址', trigger: 'blur' },
+        username: [
+          { required: true, message: "请输入用户昵称", trigger: "blur" },
         ],
-        pwd: [{ validator: validatePwd, trigger: 'blur' }],
+        mail: [
+          { validator: validateMail, trigger: "blur" },
+          { type: "email", message: "请输入合法的邮箱地址", trigger: "blur" },
+        ],
+        pwd: [{ validator: validatePwd, trigger: "blur" }],
       },
-    }
+    };
   },
   components: {
     MyContent,
     TopBar,
   },
   methods: {
-    goBack() {
-      this.$router.go(-1)
+    back() {
+      this.$router.go(-1);
     },
-    goLogin() {
-      this.$router.replace({ path: '/login' })
+    login() {
+      this.$router.replace({ path: "/login" });
     },
     sub(formName) {
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          this.$message.loading({ content: 'Loading...', key })
-          // setTimeout(() => {
-          //   Http('/register', this.form)
-          //     .then((res) => {
-          //       console.log(res)
-          //       this.$message.success({ content: res, key, duration: 2 })
-          //       this.goLogin()
-          //     })
-          //     .catch((err) => {
-          //       console.log(err)
-          //       this.$message.error({ content: err, key, duration: 2 })
-          //     })
-          // }, 1000)
-          let res = await Http('/register', this.form)
+          this.$message.loading({ content: "Loading...", key });
+          let res = await Http("/register", this.form);
           try {
-            console.log(res)
-            this.$message.success({ content: res.msg, key, duration: 2 })
-            this.goLogin()
-          } catch (err) {
-            console.log(err)
-            this.$message.error({ content: err, key, duration: 2 })
+            if (res.code === 1) {
+              this.$message.success({ content: res.msg, key, duration: 2 });
+              this.login();
+            } else {
+              this.$message.error({ content: res.msg, key, duration: 2 });
+            }
+          } catch (e) {
+            console.log(e);
+            this.$message.error({ content: e, key, duration: 2 });
           }
         }
-      })
+      });
     },
   },
-}
+};
 </script>
 
 <style scoped>
-.arrow {
-  font-size: 20px;
-}
 .title {
   font-size: 20px;
-  color: rgb(0 0 0 /0.87);
+  color: rgb(0 0 0 / 0.87);
   font-weight: bold;
 }
 .title-extend {
@@ -132,5 +155,9 @@ export default {
   font-weight: bold;
   color: #5f5f5f;
   margin-top: 10px;
+}
+
+.ant-form >>> .ant-form-item-label > label {
+  color: rgb(0 0 0 / 0.5);
 }
 </style>

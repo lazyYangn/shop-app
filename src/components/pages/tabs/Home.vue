@@ -22,7 +22,7 @@
           <div class="title-left">{{ item.name }}</div>
           <div
             class="title-right"
-            @click="goCategory('goodscategory', { content: item.id })"
+            @click="gotoGoodsCategory(item.id)"
           >
             查看全部
           </div>
@@ -64,6 +64,7 @@ import BScroll from "better-scroll";
 import HScroll from "@/components/scroll/HScroll";
 
 import { HttpGql, ImgUrl } from "@/kits/Http";
+import {getCachVal} from '@/kits/LocalStorage'
 
 let moreContent = [
   {
@@ -99,6 +100,7 @@ export default {
   },
   data() {
     return {
+      arr: [1, 2, 3, 4, 5],
       categorys: [],
       homeImgs: [],
       moreContent,
@@ -149,10 +151,10 @@ export default {
     });
   },
   methods: {
-    goCategory(name, params) {
-      this.$store.state.type = params.content;
-      this.$router.push({ name });
-    },
+    gotoGoodsCategory(categoryId){
+          this.$store.commit("setGoodCategory",categoryId)
+          this.$router.push({name:"goodscategory"})
+      },
     goto(name, params) {
       params
         ? this.$router.push({
@@ -166,9 +168,11 @@ export default {
     },
     async initData() {
       let t = '["03","06"]';
-      let gql = {
-        query: `
-                        {
+      let gql = ""
+      if(getCachVal("token") && getCachVal("token").length > 0 ){
+        gql = {
+              query: `
+                          {
                             homeImgs
                             categorys(type:${t}) {
                                 id
@@ -182,13 +186,44 @@ export default {
                                       id
                                     }
                                     imgpath
-                                }
+                              }
+                            }
+                            userCart(userid:"${getCachVal('userid')}"){
+                              id
+                              name
+                              price
+                              imgpath
+                              countbuy
                             }
                         }
                     `,
-      };
+        }
+      }else{
+                gql = {
+                    query:`
+                            {
+                                homeImgs
+                                categorys(type:${t}) {
+                                    id
+                                    dictid
+                                    name
+                                    goods(count:5){
+                                        id
+                                        name
+                                        type {
+                                            id
+                                        }
+                                        price
+                                        imgpath
+                                    }
+                                }
+                            }
+                        `
+                }
+            }
       try {
         let res = await HttpGql(gql);
+        console.log(res)
         for (let c of res.data.categorys) {
           c.goods = c.goods.map((item) => {
             item.imgpath = ImgUrl + item.imgpath;
@@ -197,6 +232,10 @@ export default {
         }
         this.categorys = res.data.categorys;
         this.homeImgs = res.data.homeImgs;
+        this.$store.commit("initCart",res.data.userCart ? res.data.userCart.map((item)=>{
+          item.imgpath = ImgUrl + item.imgpath
+          return item
+        }) : [])
         return true;
       } catch (error) {
         let goods = [];

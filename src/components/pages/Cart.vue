@@ -27,6 +27,7 @@
         slot="right"
         name="购买"
         class="btn btn-right"
+        @funcHandler="order"
       ></FooterBarItem>
     </FooterBar>
   </div>
@@ -38,6 +39,7 @@ import FooterBar from "@/components/footer/FooterBar";
 import FooterBarItem from "@/components/footer/FooterBarItem";
 import MyContent from "@/components/content/MyContent";
 import ProductItem from "@/components/product/ProductItem";
+import { Http, HttpGql, ImgUrl } from "@/kits/Http";
 export default {
   name: "Cart",
   data() {
@@ -54,18 +56,15 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
-  },
-  created() {
-    if (this.$store.state.cartDate.length < 1) {
-      let arr = [
-        { id: 1, name: "switch游戏主机", price: "1000", count: 1 },
-        { id: 2, name: "Mac", price: "2000", count: 1 },
-        { id: 3, name: "iphoneX", price: "3000", count: 1 },
-        { id: 4, name: "华为手机", price: "4000", count: 1 },
-      ];
-      for (let item of arr) {
-        this.$store.commit("pushCart", item);
+   async order(){
+      let res = await this.$store.dispatch("order")
+      console.log(res)
+      if(res.code === 1){
+          this.$message.success(res.msg)
+      }else{
+          this.$message.error(res.msg)
       }
+            
     }
   },
 };
@@ -86,6 +85,7 @@ export default {
   border-radius: 8px;
 }
 .btn-right {
-  background-color: #d8d8d8;
+  background-color: #2f69f8;
+  color: #fff;
 }
 </style>

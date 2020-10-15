@@ -39,7 +39,7 @@ export default {
     ProductCard,
   },
   created() {
-    this.type = this.$store.state.type
+    this.type = this.$store.state.goodCategory
     // this.searchData()
   },
   methods: {
